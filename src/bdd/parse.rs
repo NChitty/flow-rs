@@ -11,19 +11,17 @@ impl FromStr for BinaryDecisionDiagram {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut lines = s.lines();
-        let var_line = lines.next()
+        let mut var_line = lines.next()
             .ok_or(ParseError("Variable line not present"))?
             .split_ascii_whitespace();
-        let node_line = lines.next()
+        let mut node_line = lines.next()
             .ok_or(ParseError("Node line not present"))?
             .split_ascii_whitespace();
 
-        let num_vars = var_line.skip(1)
-            .next()
+        let num_vars = var_line.nth(1)
             .ok_or(ParseError("Var line does not specify number"))?
             .parse::<usize>()?;
-        let num_nodes = node_line.skip(1)
-            .next()
+        let num_nodes = node_line.nth(1)
             .ok_or(ParseError("Node line does not specify number"))?
             .parse::<usize>()?;
 
