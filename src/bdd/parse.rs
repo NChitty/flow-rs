@@ -52,11 +52,8 @@ impl FromStr for BinaryDecisionDiagram {
                 entry_node = Some(node_num);
             }
 
-            match variables.entry(var_id) {
-                Entry::Vacant(v) => {
-                    v.insert(Variable::new());
-                },
-                _ => {},
+            if let Entry::Vacant(v) = variables.entry(var_id) {
+                v.insert(Variable::new());
             }
 
             nodes.insert(node_num, Decision(
