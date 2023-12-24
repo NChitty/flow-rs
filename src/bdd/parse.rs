@@ -9,6 +9,7 @@ use crate::Variable;
 impl FromStr for BinaryDecisionDiagram {
     type Err = BDDError;
 
+    #[allow(clippy::cast_sign_loss)]
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut lines = s.lines();
         let mut var_line = lines.next()
@@ -85,7 +86,7 @@ impl FromStr for BinaryDecisionDiagram {
                         has_false = true;
                     }
                 }
-                _ => panic!("How did you get here?"),
+                Decision(_) => panic!("How did you get here?"),
             }
         });
 
