@@ -34,7 +34,7 @@ impl Evaluate for BinaryDecisionDiagram {
         while cur_node.is_decision_node() {
             let decision_node = cur_node.get_node()?;
             let var = self.variables.get(&decision_node.variable_id)
-                .ok_or(EvaluationError("Variable not found"))?;
+                .expect("Decision variable not present in map.");
             let next_node = decision_node.evaluate(var)?;
             cur_node = self.nodes.get(&next_node)
                 .ok_or(EvaluationError("Could not traverse to next node"))?;
