@@ -19,5 +19,5 @@ pub trait Evaluate {
     type Err;
     fn assign_vars(&mut self, values: &[bool]) -> Result<(), Self::Err>;
     fn eval(&self) -> Result<bool, Self::Err>;
-    fn truth_table(&self) -> String;
+    fn truth_table(&self) -> Result<String, Self::Err>;
 }

@@ -40,7 +40,7 @@ impl Evaluate for BinaryDecisionDiagram {
         }
     }
 
-    fn truth_table(&self) -> String {
+    fn truth_table(&self) -> Result<String, Self::Err> {
         todo!()
     }
 }
