@@ -7,10 +7,7 @@ use crate::Variable;
 #[cfg(test)]
 mod decision_node_test;
 
-#[cfg(test)]
-mod binary_decision_diagram_test;
-
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum BDDError {
     ParseError(&'static str),
 }

@@ -65,6 +65,35 @@ impl FromStr for BinaryDecisionDiagram {
                 )));
         }
 
+        if num_vars != variables.len() || num_nodes != nodes.len() {
+            return Err(ParseError("Number of tokens does not match first lines"));
+        }
+
+        let mut has_false = false;
+        let mut has_true = false;
+        nodes.values()
+            .filter(|&node| {
+                match node {
+                    Decision(_) => false,
+                    Terminal(_) => true,
+                }
+            }).for_each(|terminal| {
+            match terminal {
+                Terminal(val) =>  {
+                    if *val {
+                        has_true = true;
+                    } else {
+                        has_false = true;
+                    }
+                }
+                _ => panic!("How did you get here?"),
+            }
+        });
+
+        if !(has_true || has_false) {
+            return Err(ParseError("Not both types of terminal nodes."));
+        }
+
         Ok(Self {
             variables,
             nodes,
@@ -101,5 +130,66 @@ nodes 4
         );
         assert_eq!(&Terminal(false), bdd.nodes.get(&3).unwrap());
         assert_eq!(&Terminal(true), bdd.nodes.get(&4).unwrap());
+    }
+
+    #[test]
+    fn given_empty_string_then_error() {
+        let bdd = BinaryDecisionDiagram::from_str("");
+        assert!(bdd.is_err());
+    }
+
+    #[test]
+    fn given_var_line_only_then_error() {
+        let bdd = BinaryDecisionDiagram::from_str("vars 1");
+        assert!(bdd.is_err());
+    }
+
+    #[test]
+    fn given_nodes_line_only_then_error() {
+        let bdd = BinaryDecisionDiagram::from_str("vars 1
+nodes 1");
+        assert!(bdd.is_err());
+    }
+
+    #[test]
+    fn given_negative_node_id_then_error() {
+        let bdd = BinaryDecisionDiagram::from_str("vars 1
+nodes 1
+-1 0 0 0");
+        assert!(bdd.is_err());
+    }
+
+    #[test]
+    fn given_non_matching_vars_then_error() {
+        let bdd = BinaryDecisionDiagram::from_str("vars 2
+nodes 1
+0 0 0 0");
+        assert!(bdd.is_err());
+    }
+
+    #[test]
+    fn given_non_matching_nodes_then_error() {
+        let bdd = BinaryDecisionDiagram::from_str("vars 1
+nodes 2
+0 0 0 0");
+        assert!(bdd.is_err());
+    }
+
+    #[test]
+    fn given_no_terminal_nodes_then_error() {
+        let bdd = BinaryDecisionDiagram::from_str("vars 1
+nodes 1
+0 0 0 0");
+        assert!(bdd.is_err());
+    }
+
+    #[test]
+    fn given_parseable_then_ok() {
+        let bdd = BinaryDecisionDiagram::from_str("vars 1
+nodes 3
+0 1 2 0
+1 -1 -1 0
+2 -1 -1 1");
+        assert!(bdd.is_ok());
     }
 }
