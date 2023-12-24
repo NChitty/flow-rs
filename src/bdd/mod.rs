@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::num::ParseIntError;
-use std::str::FromStr;
+
 use crate::bdd::BDDError::{EvaluationError, ParseError};
 use crate::bdd::BinaryNode::{Decision, Terminal};
 use crate::Variable;

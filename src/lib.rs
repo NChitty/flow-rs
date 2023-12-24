@@ -1,10 +1,16 @@
-use std::error::Error;
-use crate::bdd::BDDError;
+
+
 
 pub mod bdd;
 
 pub struct Variable {
     pub value: Option<bool>,
+}
+
+impl Default for Variable {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl Variable {

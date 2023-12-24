@@ -12,7 +12,7 @@ impl Evaluate for BinaryDecisionDiagram {
 
         let mut keys: Vec<usize> = self.variables.iter()
             .clone()
-            .map(|(k, v)| *k)
+            .map(|(k, _v)| *k)
             .collect();
         keys.sort();
 
