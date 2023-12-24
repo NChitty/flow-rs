@@ -10,11 +10,17 @@ impl Evaluate for BinaryDecisionDiagram {
             return Err(VariableAssignmentError("Length of variable assignment does not match"));
         }
 
-        for (index, &value) in values.iter().enumerate() {
+        let mut keys: Vec<usize> = self.variables.iter()
+            .clone()
+            .map(|(k, v)| *k)
+            .collect();
+        keys.sort();
+
+        for (index, &value) in keys.iter().enumerate() {
             self.variables
-                .get_mut(&index)
-                .ok_or(VariableAssignmentError("Could not find variable to assign"))?
-                .value = Some(value);
+                .get_mut(&value)
+                .expect("Malformed variables, unable to find in map")
+                .value = Some(values[index]);
         }
 
         Ok(())
@@ -80,6 +86,17 @@ nodes 3
         let mut bdd = BinaryDecisionDiagram::from_str(SIMPLE_BDD).unwrap();
         let bools = vec![true, true];
         assert!(bdd.assign_vars(&bools).is_err());
+    }
+
+    #[test]
+    fn given_one_indexed_vars_then_ok() {
+        let mut bdd = BinaryDecisionDiagram::from_str("vars 1
+nodes 3
+0 2 1 1
+1 -1 -1 0
+2 -1 -1 1").unwrap();
+        let bools = vec![true];
+        assert!(bdd.assign_vars(&bools).is_ok());
     }
 
     #[test]
