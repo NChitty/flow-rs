@@ -1,0 +1,33 @@
+name: Checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  clippy:
+    name: "Lint"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: giraffate/clippy-action@v1
+        name: Clippy
+        with:
+          reporter: 'github-pr-review'
+          filter_mode: diff_context
+          clippy_flags: "-- -W clippy::pedantic"
+
+  tests:
+    name: "Tests"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - name: Tests
+        run: cargo test

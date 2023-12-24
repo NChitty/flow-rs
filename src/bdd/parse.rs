@@ -9,22 +9,21 @@ use crate::Variable;
 impl FromStr for BinaryDecisionDiagram {
     type Err = BDDError;
 
+    #[allow(clippy::cast_sign_loss)]
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut lines = s.lines();
-        let var_line = lines.next()
-            .ok_or_else(|| ParseError("Variable line not present"))?
+        let mut var_line = lines.next()
+            .ok_or(ParseError("Variable line not present"))?
             .split_ascii_whitespace();
-        let node_line = lines.next()
-            .ok_or_else(|| ParseError("Node line not present"))?
+        let mut node_line = lines.next()
+            .ok_or(ParseError("Node line not present"))?
             .split_ascii_whitespace();
 
-        let num_vars = var_line.skip(1)
-            .next()
-            .ok_or_else(|| ParseError("Var line does not specify number"))?
+        let num_vars = var_line.nth(1)
+            .ok_or(ParseError("Var line does not specify number"))?
             .parse::<usize>()?;
-        let num_nodes = node_line.skip(1)
-            .next()
-            .ok_or_else(|| ParseError("Node line does not specify number"))?
+        let num_nodes = node_line.nth(1)
+            .ok_or(ParseError("Node line does not specify number"))?
             .parse::<usize>()?;
 
         let mut variables= HashMap::with_capacity(num_vars);
@@ -33,16 +32,16 @@ impl FromStr for BinaryDecisionDiagram {
         for line in lines {
             let mut split = line.split_ascii_whitespace();
             let node_num = split.next()
-                .ok_or_else(|| ParseError("Node num not present"))?
+                .ok_or(ParseError("Node num not present"))?
                 .parse::<usize>()?;
             let node_if_true = split.next()
-                .ok_or_else(|| ParseError("True Node number not present"))?
+                .ok_or(ParseError("True Node number not present"))?
                 .parse::<isize>()?;
             let node_if_false = split.next()
-                .ok_or_else(|| ParseError("False Node number not present"))?
+                .ok_or(ParseError("False Node number not present"))?
                 .parse::<isize>()?;
             let var_id = split.next()
-                .ok_or_else(|| ParseError("Var ID not present"))?
+                .ok_or(ParseError("Var ID not present"))?
                 .parse::<usize>()?;
 
             if node_if_true < 0 && node_if_false < 0 {
@@ -54,11 +53,8 @@ impl FromStr for BinaryDecisionDiagram {
                 entry_node = Some(node_num);
             }
 
-            match variables.entry(var_id) {
-                Entry::Vacant(v) => {
-                    v.insert(Variable::new());
-                },
-                _ => {},
+            if let Entry::Vacant(v) = variables.entry(var_id) {
+                v.insert(Variable::new());
             }
 
             nodes.insert(node_num, Decision(
@@ -90,7 +86,7 @@ impl FromStr for BinaryDecisionDiagram {
                         has_false = true;
                     }
                 }
-                _ => panic!("How did you get here?"),
+                Decision(_) => panic!("How did you get here?"),
             }
         });
 
