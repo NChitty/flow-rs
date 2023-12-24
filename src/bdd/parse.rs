@@ -29,7 +29,7 @@ impl FromStr for BinaryDecisionDiagram {
 
         let mut variables= HashMap::with_capacity(num_vars);
         let mut nodes = HashMap::with_capacity(num_nodes);
-
+        let mut entry_node: Option<usize> = None;
         for line in lines {
             let mut split = line.split_ascii_whitespace();
             let node_num = split.next()
@@ -48,6 +48,10 @@ impl FromStr for BinaryDecisionDiagram {
             if node_if_true < 0 && node_if_false < 0 {
                 nodes.insert(node_num, Terminal(var_id == 1));
                 continue;
+            }
+
+            if entry_node.is_none() {
+                entry_node = Some(node_num);
             }
 
             match variables.entry(var_id) {
@@ -90,13 +94,14 @@ impl FromStr for BinaryDecisionDiagram {
             }
         });
 
-        if !(has_true || has_false) {
+        if !(has_true && has_false) {
             return Err(ParseError("Not both types of terminal nodes."));
         }
 
         Ok(Self {
             variables,
             nodes,
+            entry_node: entry_node.ok_or(ParseError("No entry node was set"))?
         })
     }
 }
@@ -180,6 +185,24 @@ nodes 2
         let bdd = BinaryDecisionDiagram::from_str("vars 1
 nodes 1
 0 0 0 0");
+        assert!(bdd.is_err());
+    }
+
+    #[test]
+    fn given_only_true_terminal_nodes_then_error() {
+        let bdd = BinaryDecisionDiagram::from_str("vars 1
+nodes 2
+0 1 0 0
+1 -1 -1 1");
+        assert!(bdd.is_err());
+    }
+
+    #[test]
+    fn given_only_false_terminal_nodes_then_error() {
+        let bdd = BinaryDecisionDiagram::from_str("vars 1
+nodes 2
+0 1 2 0
+2 -1 -1 0");
         assert!(bdd.is_err());
     }
 
