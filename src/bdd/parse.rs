@@ -94,7 +94,7 @@ impl FromStr for BinaryDecisionDiagram {
             }
         });
 
-        if !(has_true || has_false) {
+        if !(has_true && has_false) {
             return Err(ParseError("Not both types of terminal nodes."));
         }
 
@@ -185,6 +185,24 @@ nodes 2
         let bdd = BinaryDecisionDiagram::from_str("vars 1
 nodes 1
 0 0 0 0");
+        assert!(bdd.is_err());
+    }
+
+    #[test]
+    fn given_only_true_terminal_nodes_then_error() {
+        let bdd = BinaryDecisionDiagram::from_str("vars 1
+nodes 2
+0 1 0 0
+1 -1 -1 1");
+        assert!(bdd.is_err());
+    }
+
+    #[test]
+    fn given_only_false_terminal_nodes_then_error() {
+        let bdd = BinaryDecisionDiagram::from_str("vars 1
+nodes 2
+0 1 2 0
+2 -1 -1 0");
         assert!(bdd.is_err());
     }
 
