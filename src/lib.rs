@@ -41,7 +41,9 @@ pub trait Evaluate {
     ///
     /// let mut some_evaluate: BinaryDecisionDiagram = SIMPLE_BDD.parse().unwrap();
     ///
-    /// some_evaluate.assign_vars(&vec![true])?;
+    /// if let Ok(_) = some_evaluate.assign_vars(&vec![true]) {
+    ///  // do eval
+    /// }
     /// ```
     fn assign_vars(&mut self, values: &[bool]) -> Result<(), Self::Err>;
 
@@ -63,8 +65,9 @@ pub trait Evaluate {
     ///
     /// let mut some_evaluate: BinaryDecisionDiagram = SIMPLE_BDD.parse().unwrap();
     ///
-    /// some_evaluate.assign_vars(&vec![true])?;
-    /// some_evaluate.eval()?;
+    /// if let Ok(_) = some_evaluate.assign_vars(&vec![true]) {
+    ///    let eval: bool = some_evaluate.eval().unwrap();
+    /// }
     /// ```
     fn eval(&self) -> Result<bool, Self::Err>;
 
@@ -87,7 +90,7 @@ pub trait Evaluate {
     ///
     /// let mut some_evaluate: BinaryDecisionDiagram = SIMPLE_BDD.parse().unwrap();
     ///
-    /// some_evaluate.truth_table()?;
+    /// some_evaluate.truth_table();
     /// ```
     fn truth_table(&mut self) -> Result<Vec<bool>, Self::Err>;
 }
