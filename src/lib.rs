@@ -1,3 +1,6 @@
+use std::error::Error;
+use crate::bdd::BDDError;
+
 pub mod bdd;
 
 pub struct Variable {
@@ -10,4 +13,11 @@ impl Variable {
             value: None,
         }
     }
+}
+
+pub trait Evaluate {
+    type Err;
+    fn assign_vars(&mut self, values: &[bool]) -> Result<(), Self::Err>;
+    fn eval(&self) -> Result<bool, Self::Err>;
+    fn truth_table(&self) -> String;
 }

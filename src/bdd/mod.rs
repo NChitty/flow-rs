@@ -1,7 +1,8 @@
 use std::collections::HashMap;
 use std::num::ParseIntError;
 use std::str::FromStr;
-use crate::bdd::BDDError::ParseError;
+use crate::bdd::BDDError::{EvaluationError, ParseError};
+use crate::bdd::BinaryNode::{Decision, Terminal};
 use crate::Variable;
 
 #[cfg(test)]
@@ -9,7 +10,9 @@ mod decision_node_test;
 
 #[derive(Debug, PartialEq)]
 pub enum BDDError {
+    EvaluationError(&'static str),
     ParseError(&'static str),
+    VariableAssignmentError(&'static str),
 }
 
 impl From<ParseIntError> for BDDError {
@@ -21,14 +24,32 @@ impl From<ParseIntError> for BDDError {
 pub struct BinaryDecisionDiagram {
     variables: HashMap<usize, Variable>,
     nodes: HashMap<usize, BinaryNode>,
+    entry_node: usize,
 }
 
 mod parse;
+mod eval;
 
 #[derive(Debug, PartialEq)]
 enum BinaryNode {
     Decision(DecisionNode),
     Terminal(bool),
+}
+
+impl BinaryNode {
+    fn is_decision_node(&self) -> bool {
+        match self {
+            Decision(_) => true,
+            Terminal(_) => false,
+        }
+    }
+
+    fn get_node(&self) -> Result<&DecisionNode, BDDError> {
+        match self {
+            Decision(node) => Ok(node),
+            Terminal(_) => Err(EvaluationError("Cannot get decision from terminal node")),
+        }
+    }
 }
 
 #[derive(Debug, PartialEq)]
@@ -45,11 +66,11 @@ impl DecisionNode {
         }
     }
 
-    pub fn evaluate(self, variable: &Variable) -> Result<usize, &'static str> {
+    pub fn evaluate(&self, variable: &Variable) -> Result<usize, BDDError> {
         match variable.value {
             Some(false) => Ok(self.decision_map[0]),
             Some(true) => Ok(self.decision_map[1]),
-            None => Err("Cannot evaluate node for an unassigned variable."),
+            None => Err(EvaluationError("Cannot evaluate node for an unassigned variable.")),
         }
     }
 }

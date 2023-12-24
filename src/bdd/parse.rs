@@ -29,7 +29,7 @@ impl FromStr for BinaryDecisionDiagram {
 
         let mut variables= HashMap::with_capacity(num_vars);
         let mut nodes = HashMap::with_capacity(num_nodes);
-
+        let mut entry_node: Option<usize> = None;
         for line in lines {
             let mut split = line.split_ascii_whitespace();
             let node_num = split.next()
@@ -48,6 +48,10 @@ impl FromStr for BinaryDecisionDiagram {
             if node_if_true < 0 && node_if_false < 0 {
                 nodes.insert(node_num, Terminal(var_id == 1));
                 continue;
+            }
+
+            if entry_node.is_none() {
+                entry_node = Some(node_num);
             }
 
             match variables.entry(var_id) {
@@ -97,6 +101,7 @@ impl FromStr for BinaryDecisionDiagram {
         Ok(Self {
             variables,
             nodes,
+            entry_node: entry_node.ok_or(ParseError("No entry node was set"))?
         })
     }
 }
