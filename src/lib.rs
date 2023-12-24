@@ -1,6 +1,3 @@
-
-
-
 pub mod bdd;
 
 pub struct Variable {
