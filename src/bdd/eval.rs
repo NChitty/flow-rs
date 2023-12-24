@@ -1,7 +1,7 @@
 use crate::bdd::{BDDError, BinaryDecisionDiagram};
 use crate::bdd::BDDError::{EvaluationError, VariableAssignmentError};
 use crate::bdd::BinaryNode::{Decision, Terminal};
-use crate::Evaluate;
+use crate::{convert_bits_to_bools, Evaluate};
 
 impl Evaluate for BinaryDecisionDiagram {
     type Err = BDDError;
@@ -40,8 +40,18 @@ impl Evaluate for BinaryDecisionDiagram {
         }
     }
 
-    fn truth_table(&self) -> Result<String, Self::Err> {
-        todo!()
+    fn truth_table(&mut self) -> Result<Vec<bool>, Self::Err> {
+        let combinations: usize = (2usize).checked_pow(self.variables.len() as u32)
+            .expect("Too many damn variables");
+        let mut results: Vec<bool> = Vec::new();
+
+        for var_set in 0..combinations {
+            let vars = convert_bits_to_bools(var_set, self.variables.len());
+            self.assign_vars(&vars)?;
+            results.push(self.eval()?);
+        }
+
+        Ok(results)
     }
 }
 
@@ -94,5 +104,14 @@ nodes 3
         let bools = vec![false];
         bdd.assign_vars(&bools).expect("Could not assign bools.");
         assert!(!bdd.eval().expect("Could not evaluate"))
+    }
+
+    #[test]
+    fn truth_table() {
+        let mut bdd = BinaryDecisionDiagram::from_str(SIMPLE_BDD).unwrap();
+        assert_eq!(
+            vec![false, true],
+            bdd.truth_table().expect("Could not complete truth table")
+        );
     }
 }
