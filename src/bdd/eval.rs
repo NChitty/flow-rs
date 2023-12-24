@@ -14,7 +14,7 @@ impl Evaluate for BinaryDecisionDiagram {
             .clone()
             .map(|(k, _v)| *k)
             .collect();
-        keys.sort();
+        keys.sort_unstable();
 
         for (index, &value) in keys.iter().enumerate() {
             self.variables
@@ -47,8 +47,10 @@ impl Evaluate for BinaryDecisionDiagram {
     }
 
     fn truth_table(&mut self) -> Result<Vec<bool>, Self::Err> {
-        let combinations: usize = (2usize).checked_pow(self.variables.len() as u32)
-            .expect("Too many damn variables");
+        if self.variables.len() > usize::BITS as usize {
+            return Err(EvaluationError("Too many variables"));
+        }
+        let combinations: usize = 1 << self.variables.len();
         let mut results: Vec<bool> = Vec::new();
 
         for var_set in 0..combinations {
