@@ -55,7 +55,7 @@ impl Evaluate for BinaryDecisionDiagram {
                         .variables
                         .get(&decision_node.variable_id)
                         .expect("Decision variable not present in map.");
-                    let next_node = decision_node.evaluate(var)?;
+                    let next_node = decision_node.evaluate(*var)?;
                     cur_node = self
                         .nodes
                         .get(&next_node)
