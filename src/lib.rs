@@ -29,9 +29,7 @@ impl Default for Variable {
 impl Variable {
     #[must_use]
     pub fn new() -> Self {
-        Self {
-            value: None,
-        }
+        Self { value: None }
     }
 }
 

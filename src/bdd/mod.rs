@@ -43,8 +43,8 @@ pub struct BinaryDecisionDiagram {
     entry_node: usize,
 }
 
-mod parse;
 mod eval;
+mod parse;
 
 #[derive(Debug, PartialEq)]
 enum BinaryNode {
@@ -86,7 +86,9 @@ impl DecisionNode {
         match variable.value {
             Some(false) => Ok(self.decision_map[0]),
             Some(true) => Ok(self.decision_map[1]),
-            None => Err(EvaluationError("Cannot evaluate node for an unassigned variable.")),
+            None => Err(EvaluationError(
+                "Cannot evaluate node for an unassigned variable.",
+            )),
         }
     }
 }
