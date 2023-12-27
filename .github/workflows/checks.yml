@@ -32,6 +32,7 @@ jobs:
       - uses: giraffate/clippy-action@v1
         name: Clippy
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: 'github-pr-review'
           filter_mode: diff_context
           clippy_flags: "-- -W clippy::pedantic"
