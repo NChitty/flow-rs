@@ -32,9 +32,7 @@ pub enum BDDError {
 }
 
 impl From<ParseIntError> for BDDError {
-    fn from(_: ParseIntError) -> Self {
-        ParseError("Could not parse int")
-    }
+    fn from(_: ParseIntError) -> Self { ParseError("Could not parse int") }
 }
 
 pub struct BinaryDecisionDiagram {

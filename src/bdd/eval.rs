@@ -21,6 +21,7 @@ use crate::{convert_bits_to_bools, Evaluate};
 
 impl Evaluate for BinaryDecisionDiagram {
     type Err = BDDError;
+
     fn assign_vars(&mut self, values: &[bool]) -> Result<(), Self::Err> {
         if values.len() != self.variables.len() {
             return Err(VariableAssignmentError(

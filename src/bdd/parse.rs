@@ -9,18 +9,19 @@
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied.    See the License for the specific language governing
+ * permissions and    limitations under the License.
  */
+
+use std::collections::hash_map::Entry;
+use std::collections::HashMap;
+use std::str::FromStr;
 
 use crate::bdd::BDDError::ParseError;
 use crate::bdd::BinaryNode::{Decision, Terminal};
 use crate::bdd::{BDDError, BinaryDecisionDiagram, DecisionNode};
 use crate::Variable;
-use std::collections::hash_map::Entry;
-use std::collections::HashMap;
-use std::str::FromStr;
 
 impl FromStr for BinaryDecisionDiagram {
     type Err = BDDError;
@@ -110,7 +111,7 @@ impl FromStr for BinaryDecisionDiagram {
                     } else {
                         has_false = true;
                     }
-                }
+                },
                 Decision(_) => panic!("How did you get here?"),
             });
 
@@ -128,9 +129,10 @@ impl FromStr for BinaryDecisionDiagram {
 
 #[cfg(test)]
 mod test {
+    use std::str::FromStr;
+
     use crate::bdd::BinaryNode::{Decision, Terminal};
     use crate::bdd::{BinaryDecisionDiagram, DecisionNode};
-    use std::str::FromStr;
 
     const FREE_BDD_2: &str = "vars 2
 nodes 4
