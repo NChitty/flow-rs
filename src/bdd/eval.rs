@@ -1,35 +1,35 @@
 /*
- *    Copyright (c) 2023 William Nicholas Chitty
+ * Copyright (c) 2023 William Nicholas Chitty
  *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
-use crate::bdd::{BDDError, BinaryDecisionDiagram};
 use crate::bdd::BDDError::{EvaluationError, VariableAssignmentError};
 use crate::bdd::BinaryNode::{Decision, Terminal};
+use crate::bdd::{BDDError, BinaryDecisionDiagram};
 use crate::{convert_bits_to_bools, Evaluate};
 
 impl Evaluate for BinaryDecisionDiagram {
     type Err = BDDError;
+
     fn assign_vars(&mut self, values: &[bool]) -> Result<(), Self::Err> {
         if values.len() != self.variables.len() {
-            return Err(VariableAssignmentError("Length of variable assignment does not match"));
+            return Err(VariableAssignmentError(
+                "Length of variable assignment does not match",
+            ));
         }
 
-        let mut keys: Vec<usize> = self.variables.iter()
-            .clone()
-            .map(|(k, _v)| *k)
-            .collect();
+        let mut keys: Vec<usize> = self.variables.iter().clone().map(|(k, _v)| *k).collect();
         keys.sort_unstable();
 
         for (index, &value) in keys.iter().enumerate() {
@@ -43,16 +43,21 @@ impl Evaluate for BinaryDecisionDiagram {
     }
 
     fn eval(&self) -> Result<bool, Self::Err> {
-        let mut cur_node = self.nodes
+        let mut cur_node = self
+            .nodes
             .get(&self.entry_node)
             .ok_or(EvaluationError("Unable to grab entry node"))?;
 
         while cur_node.is_decision_node() {
             let decision_node = cur_node.get_node()?;
-            let var = self.variables.get(&decision_node.variable_id)
+            let var = self
+                .variables
+                .get(&decision_node.variable_id)
                 .expect("Decision variable not present in map.");
             let next_node = decision_node.evaluate(var)?;
-            cur_node = self.nodes.get(&next_node)
+            cur_node = self
+                .nodes
+                .get(&next_node)
                 .ok_or(EvaluationError("Could not traverse to next node"))?;
         }
 
@@ -108,11 +113,14 @@ nodes 3
 
     #[test]
     fn given_one_indexed_vars_then_ok() {
-        let mut bdd = BinaryDecisionDiagram::from_str("vars 1
+        let mut bdd = BinaryDecisionDiagram::from_str(
+            "vars 1
 nodes 3
 0 2 1 1
 1 -1 -1 0
-2 -1 -1 1").unwrap();
+2 -1 -1 1",
+        )
+        .unwrap();
         let bools = vec![true];
         assert!(bdd.assign_vars(&bools).is_ok());
     }
