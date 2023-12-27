@@ -29,10 +29,10 @@ impl Evaluate for BinaryDecisionDiagram {
             ));
         }
 
-        let mut keys: Vec<usize> = self.variables.iter().clone().map(|(k, _v)| *k).collect();
+        let mut keys: Vec<usize> = self.variables.keys().copied().collect();
         keys.sort_unstable();
 
-        for (index, &value) in keys.iter().enumerate() {
+        for (index, value) in keys.into_iter().enumerate() {
             self.variables
                 .get_mut(&value)
                 .expect("Malformed variables, unable to find in map") = &mut Some(values[index]);
@@ -47,22 +47,21 @@ impl Evaluate for BinaryDecisionDiagram {
             .get(&self.entry_node)
             .ok_or(EvaluationError("Unable to grab entry node"))?;
 
-        while cur_node.is_decision_node() {
-            let decision_node = cur_node.get_node()?;
-            let var = self
-                .variables
-                .get(&decision_node.variable_id)
-                .expect("Decision variable not present in map.");
-            let next_node = decision_node.evaluate(var)?;
-            cur_node = self
-                .nodes
-                .get(&next_node)
-                .ok_or(EvaluationError("Could not traverse to next node"))?;
-        }
-
-        match cur_node {
-            Decision(_) => panic!("While exited prematurely, this should be a terminal node"),
-            Terminal(val) => Ok(*val),
+        loop {
+            match cur_node {
+                Decision(decision_node) => {
+                    let var = self
+                        .variables
+                        .get(&decision_node.variable_id)
+                        .expect("Decision variable not present in map.");
+                    let next_node = decision_node.evaluate(var)?;
+                    cur_node = self
+                        .nodes
+                        .get(&next_node)
+                        .ok_or(EvaluationError("Could not traverse to next node"))?;
+                },
+                Terminal(b) => return Ok(*b),
+            }
         }
     }
 
