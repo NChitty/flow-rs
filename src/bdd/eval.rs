@@ -35,8 +35,7 @@ impl Evaluate for BinaryDecisionDiagram {
         for (index, &value) in keys.iter().enumerate() {
             self.variables
                 .get_mut(&value)
-                .expect("Malformed variables, unable to find in map")
-                .value = Some(values[index]);
+                .expect("Malformed variables, unable to find in map") = &mut Some(values[index]);
         }
 
         Ok(())
@@ -130,7 +129,7 @@ nodes 3
         let mut bdd = BinaryDecisionDiagram::from_str(SIMPLE_BDD).unwrap();
         let bools = vec![true];
         assert!(bdd.assign_vars(&bools).is_ok());
-        assert!(bdd.variables.get(&0).unwrap().value.unwrap_or(false));
+        assert!(bdd.variables.get(&0).unwrap().unwrap_or(false));
     }
 
     #[test]

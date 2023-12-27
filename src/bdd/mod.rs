@@ -81,7 +81,7 @@ impl DecisionNode {
     }
 
     pub fn evaluate(&self, variable: &Variable) -> Result<usize, BDDError> {
-        match variable.value {
+        match variable {
             Some(false) => Ok(self.decision_map[0]),
             Some(true) => Ok(self.decision_map[1]),
             None => Err(EvaluationError(
