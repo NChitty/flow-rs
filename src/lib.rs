@@ -43,15 +43,12 @@ pub trait Evaluate {
     /// ```
     /// use flow::bdd::BinaryDecisionDiagram;
     /// use flow::Evaluate;
-    ///
     /// const SIMPLE_BDD: &str = "vars 1
     ///  nodes 3
     ///  0 1 2 0
     ///  1 -1 -1 1
     ///  2 -1 -1 0";
-    ///
     /// let mut some_evaluate: BinaryDecisionDiagram = SIMPLE_BDD.parse().unwrap();
-    ///
     /// if let Ok(_) = some_evaluate.assign_vars(&vec![true]) {
     ///     // do eval
     /// }
@@ -65,19 +62,16 @@ pub trait Evaluate {
     /// * `EvaluationError`
     /// # Example
     /// The following assigns the variable `0` to true for the BDD and gets the
-    /// result via `eval`. ```
+    /// result via `eval`.
+    /// ```
     /// use flow::bdd::BinaryDecisionDiagram;
     /// use flow::Evaluate;
-    ///
     /// const SIMPLE_BDD: &str = "vars 1
     ///  nodes 3
     ///  0 1 2 0
     ///  1 -1 -1 1
     ///  2 -1 -1 0";
-    ///
-    /// let mut some_evaluate: BinaryDecisionDiagram =
-    /// SIMPLE_BDD.parse().unwrap();
-    ///
+    /// let mut some_evaluate: BinaryDecisionDiagram = SIMPLE_BDD.parse().unwrap();
     /// if let Ok(_) = some_evaluate.assign_vars(&vec![true]) {
     ///     let eval: bool = some_evaluate.eval().unwrap();
     /// }
@@ -95,15 +89,12 @@ pub trait Evaluate {
     /// ```
     /// use flow::bdd::BinaryDecisionDiagram;
     /// use flow::Evaluate;
-    ///
     /// const SIMPLE_BDD: &str = "vars 1
     ///  nodes 3
     ///  0 1 2 0
     ///  1 -1 -1 1
     ///  2 -1 -1 0";
-    ///
     /// let mut some_evaluate: BinaryDecisionDiagram = SIMPLE_BDD.parse().unwrap();
-    ///
     /// some_evaluate.truth_table();
     /// ```
     fn truth_table(&mut self) -> Result<Vec<bool>, Self::Err>;
