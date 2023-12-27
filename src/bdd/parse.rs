@@ -18,9 +18,9 @@ use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 use std::str::FromStr;
 
-use crate::bdd::{BDDError, BinaryDecisionDiagram, DecisionNode};
 use crate::bdd::BDDError::ParseError;
 use crate::bdd::BinaryNode::{Decision, Terminal};
+use crate::bdd::{BDDError, BinaryDecisionDiagram, DecisionNode};
 
 impl FromStr for BinaryDecisionDiagram {
     type Err = BDDError;
@@ -127,8 +127,8 @@ impl FromStr for BinaryDecisionDiagram {
 mod test {
     use std::str::FromStr;
 
-    use crate::bdd::{BinaryDecisionDiagram, DecisionNode};
     use crate::bdd::BinaryNode::{Decision, Terminal};
+    use crate::bdd::{BinaryDecisionDiagram, DecisionNode};
 
     const FREE_BDD_2: &str = "vars 2
 nodes 4
