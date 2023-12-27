@@ -16,18 +16,7 @@
 
 pub mod bdd;
 
-pub struct Variable {
-    pub value: Option<bool>,
-}
-
-impl Default for Variable {
-    fn default() -> Self { Self::new() }
-}
-
-impl Variable {
-    #[must_use]
-    pub fn new() -> Self { Self { value: None } }
-}
+pub type Variable = Option<bool>;
 
 pub trait Evaluate {
     type Err;

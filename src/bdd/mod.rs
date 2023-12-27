@@ -18,7 +18,6 @@ use std::collections::HashMap;
 use std::num::ParseIntError;
 
 use crate::bdd::BDDError::{EvaluationError, ParseError};
-use crate::bdd::BinaryNode::{Decision, Terminal};
 use crate::Variable;
 
 #[cfg(test)]
@@ -50,22 +49,6 @@ enum BinaryNode {
     Terminal(bool),
 }
 
-impl BinaryNode {
-    fn is_decision_node(&self) -> bool {
-        match self {
-            Decision(_) => true,
-            Terminal(_) => false,
-        }
-    }
-
-    fn get_node(&self) -> Result<&DecisionNode, BDDError> {
-        match self {
-            Decision(node) => Ok(node),
-            Terminal(_) => Err(EvaluationError("Cannot get decision from terminal node")),
-        }
-    }
-}
-
 #[derive(Debug, PartialEq)]
 struct DecisionNode {
     pub variable_id: usize,
@@ -80,8 +63,8 @@ impl DecisionNode {
         }
     }
 
-    pub fn evaluate(&self, variable: &Variable) -> Result<usize, BDDError> {
-        match variable.value {
+    pub fn evaluate(&self, variable: Variable) -> Result<usize, BDDError> {
+        match variable {
             Some(false) => Ok(self.decision_map[0]),
             Some(true) => Ok(self.decision_map[1]),
             None => Err(EvaluationError(
