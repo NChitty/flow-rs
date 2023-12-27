@@ -18,7 +18,6 @@ use std::collections::HashMap;
 use std::num::ParseIntError;
 
 use crate::bdd::BDDError::{EvaluationError, ParseError};
-use crate::bdd::BinaryNode::{Decision, Terminal};
 use crate::Variable;
 
 #[cfg(test)]
@@ -48,22 +47,6 @@ mod parse;
 enum BinaryNode {
     Decision(DecisionNode),
     Terminal(bool),
-}
-
-impl BinaryNode {
-    fn is_decision_node(&self) -> bool {
-        match self {
-            Decision(_) => true,
-            Terminal(_) => false,
-        }
-    }
-
-    fn get_node(&self) -> Result<&DecisionNode, BDDError> {
-        match self {
-            Decision(node) => Ok(node),
-            Terminal(_) => Err(EvaluationError("Cannot get decision from terminal node")),
-        }
-    }
 }
 
 #[derive(Debug, PartialEq)]

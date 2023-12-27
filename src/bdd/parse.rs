@@ -18,10 +18,9 @@ use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 use std::str::FromStr;
 
+use crate::bdd::{BDDError, BinaryDecisionDiagram, DecisionNode};
 use crate::bdd::BDDError::ParseError;
 use crate::bdd::BinaryNode::{Decision, Terminal};
-use crate::bdd::{BDDError, BinaryDecisionDiagram, DecisionNode};
-use crate::Variable;
 
 impl FromStr for BinaryDecisionDiagram {
     type Err = BDDError;
@@ -79,7 +78,7 @@ impl FromStr for BinaryDecisionDiagram {
             }
 
             if let Entry::Vacant(v) = variables.entry(var_id) {
-                v.insert(Variable::new());
+                v.insert(None);
             }
 
             nodes.insert(
@@ -100,11 +99,11 @@ impl FromStr for BinaryDecisionDiagram {
         let mut has_true = false;
         nodes
             .values()
-            .filter_map(|&node| match node {
+            .filter_map(|node| match node {
                 Decision(_) => None,
                 Terminal(val) => Some(val),
             })
-            .for_each(|terminal| {
+            .for_each(|&terminal| {
                 if terminal {
                     has_true = true;
                 } else {
@@ -128,8 +127,8 @@ impl FromStr for BinaryDecisionDiagram {
 mod test {
     use std::str::FromStr;
 
-    use crate::bdd::BinaryNode::{Decision, Terminal};
     use crate::bdd::{BinaryDecisionDiagram, DecisionNode};
+    use crate::bdd::BinaryNode::{Decision, Terminal};
 
     const FREE_BDD_2: &str = "vars 2
 nodes 4

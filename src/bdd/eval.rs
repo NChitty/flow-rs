@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+use crate::{convert_bits_to_bools, Evaluate};
+use crate::bdd::{BDDError, BinaryDecisionDiagram};
 use crate::bdd::BDDError::{EvaluationError, VariableAssignmentError};
 use crate::bdd::BinaryNode::{Decision, Terminal};
-use crate::bdd::{BDDError, BinaryDecisionDiagram};
-use crate::{convert_bits_to_bools, Evaluate};
 
 impl Evaluate for BinaryDecisionDiagram {
     type Err = BDDError;
@@ -33,9 +33,9 @@ impl Evaluate for BinaryDecisionDiagram {
         keys.sort_unstable();
 
         for (index, value) in keys.into_iter().enumerate() {
-            self.variables
+            *self.variables
                 .get_mut(&value)
-                .expect("Malformed variables, unable to find in map") = &mut Some(values[index]);
+                .expect("Malformed variables, unable to find in map") = Some(values[index]);
         }
 
         Ok(())
