@@ -12,6 +12,7 @@ jobs:
     permissions:
       pull-requests: write
     steps:
+      - if: {{ github.event == pull_request }}
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@nightly
         with:
