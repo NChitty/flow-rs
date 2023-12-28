@@ -7,12 +7,12 @@ on:
 
 jobs:
   format:
+    if: ${{ github.event_name == 'pull_request' }}
     name: "Format"
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
     steps:
-      - run: echo ${{ github.event_name }}
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@nightly
         with:
