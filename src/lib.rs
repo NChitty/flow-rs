@@ -14,13 +14,27 @@
  * limitations under the License.
  */
 
+use std::num::ParseIntError;
+use std::str::FromStr;
+
+use crate::FlowError::ParseError;
+
 pub mod bdd;
 
 pub type Variable = Option<bool>;
 
-pub trait Evaluate {
-    type Err;
+#[derive(Debug, PartialEq)]
+pub enum FlowError {
+    EvaluationError(&'static str),
+    ParseError(&'static str),
+    VariableAssignmentError(&'static str),
+}
 
+impl From<ParseIntError> for FlowError {
+    fn from(_: ParseIntError) -> Self { ParseError("Could not parse int") }
+}
+
+pub trait Evaluate {
     /// Assign variables the variables the given values.
     /// # Arguments
     /// * `values` - a slice of booleans to assign to the given struct in order
@@ -42,7 +56,7 @@ pub trait Evaluate {
     ///     // do eval
     /// }
     /// ```
-    fn assign_vars(&mut self, values: &[bool]) -> Result<(), Self::Err>;
+    fn assign_vars(&mut self, values: &[bool]) -> Result<(), FlowError>;
 
     /// Evaluate the current struct using currently assigned variables.
     /// # Errors
@@ -65,7 +79,7 @@ pub trait Evaluate {
     ///     let eval: bool = some_evaluate.eval().unwrap();
     /// }
     /// ```
-    fn eval(&self) -> Result<bool, Self::Err>;
+    fn eval(&self) -> Result<bool, FlowError>;
 
     /// Get a list of booleans in order based on values of the variables
     /// # Errors
@@ -86,7 +100,7 @@ pub trait Evaluate {
     /// let mut some_evaluate: BinaryDecisionDiagram = SIMPLE_BDD.parse().unwrap();
     /// some_evaluate.truth_table();
     /// ```
-    fn truth_table(&mut self) -> Result<Vec<bool>, Self::Err>;
+    fn truth_table(&mut self) -> Result<Vec<bool>, FlowError>;
 }
 
 pub(crate) fn convert_bits_to_bools(bits: usize, num_vars: usize) -> Vec<bool> {

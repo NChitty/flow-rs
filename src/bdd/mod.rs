@@ -15,25 +15,16 @@
  */
 
 use std::collections::HashMap;
+use std::fmt::{Display, Formatter};
 use std::num::ParseIntError;
 
-use crate::bdd::BDDError::{EvaluationError, ParseError};
-use crate::Variable;
+use crate::FlowError::{EvaluationError, ParseError};
+use crate::{FlowError, Variable};
 
 #[cfg(test)]
 mod decision_node_test;
 
-#[derive(Debug, PartialEq)]
-pub enum BDDError {
-    EvaluationError(&'static str),
-    ParseError(&'static str),
-    VariableAssignmentError(&'static str),
-}
-
-impl From<ParseIntError> for BDDError {
-    fn from(_: ParseIntError) -> Self { ParseError("Could not parse int") }
-}
-
+#[derive(Debug)]
 pub struct BinaryDecisionDiagram {
     variables: HashMap<usize, Variable>,
     nodes: HashMap<usize, BinaryNode>,
@@ -63,7 +54,7 @@ impl DecisionNode {
         }
     }
 
-    pub fn evaluate(&self, variable: Variable) -> Result<usize, BDDError> {
+    pub fn evaluate(&self, variable: Variable) -> Result<usize, FlowError> {
         match variable {
             Some(false) => Ok(self.decision_map[0]),
             Some(true) => Ok(self.decision_map[1]),

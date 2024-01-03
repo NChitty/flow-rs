@@ -18,12 +18,13 @@ use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 use std::str::FromStr;
 
-use crate::bdd::BDDError::ParseError;
 use crate::bdd::BinaryNode::{Decision, Terminal};
-use crate::bdd::{BDDError, BinaryDecisionDiagram, DecisionNode};
+use crate::bdd::{BinaryDecisionDiagram, DecisionNode};
+use crate::FlowError;
+use crate::FlowError::ParseError;
 
 impl FromStr for BinaryDecisionDiagram {
-    type Err = BDDError;
+    type Err = FlowError;
 
     #[allow(clippy::cast_sign_loss)]
     fn from_str(s: &str) -> Result<Self, Self::Err> {
