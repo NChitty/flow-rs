@@ -16,7 +16,6 @@
 
 use std::num::ParseIntError;
 
-
 use crate::FlowError::ParseError;
 
 pub mod bdd;

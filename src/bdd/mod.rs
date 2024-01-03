@@ -16,9 +16,7 @@
 
 use std::collections::HashMap;
 
-
-
-use crate::FlowError::{EvaluationError};
+use crate::FlowError::EvaluationError;
 use crate::{FlowError, Variable};
 
 #[cfg(test)]

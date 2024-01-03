@@ -18,7 +18,6 @@ use std::io::Write;
 use std::path::Path;
 use std::{fs, io};
 
-
 use clap::{Args, Parser, Subcommand, ValueEnum};
 use flow::bdd::BinaryDecisionDiagram;
 use flow::{Evaluate, FlowError};
@@ -128,7 +127,9 @@ fn respond(command: Cli, x: &mut ApplicationContext) -> Result<bool, String> {
                         })?;
                     bdd
                 },
-                ArtifactType::CrossbarMatrix => {todo!()}
+                ArtifactType::CrossbarMatrix => {
+                    todo!()
+                },
             };
             x.logical_artifact = Some(Box::new(eval));
 
@@ -141,10 +142,9 @@ fn respond(command: Cli, x: &mut ApplicationContext) -> Result<bool, String> {
 #[cfg(test)]
 mod test {
     use clap::CommandFactory;
+
     use crate::Cli;
 
     #[test]
-    fn verify_cmd() {
-        Cli::command().debug_assert();
-    }
+    fn verify_cmd() { Cli::command().debug_assert(); }
 }
