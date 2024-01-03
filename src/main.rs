@@ -126,7 +126,6 @@ fn respond(command: Cli, x: &mut ApplicationContext) -> Result<bool, String> {
                             | FlowError::ParseError(str)
                             | FlowError::VariableAssignmentError(str) => String::from(str),
                         })?;
-                    println!("BDD: {:?}", bdd);
                     bdd
                 },
                 ArtifactType::CrossbarMatrix => {todo!()}
@@ -136,5 +135,16 @@ fn respond(command: Cli, x: &mut ApplicationContext) -> Result<bool, String> {
             Ok(false)
         },
         Action::Quit => Ok(true),
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use clap::CommandFactory;
+    use crate::Cli;
+
+    #[test]
+    fn verify_cmd() {
+        Cli::command().debug_assert();
     }
 }
