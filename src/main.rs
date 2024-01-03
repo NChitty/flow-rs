@@ -56,16 +56,9 @@ enum ArtifactType {
     CrossbarMatrix,
 }
 
+#[derive(Default)]
 struct ApplicationContext {
     logical_artifact: Option<Box<dyn Evaluate>>,
-}
-
-impl Default for ApplicationContext {
-    fn default() -> Self {
-        Self {
-            logical_artifact: None,
-        }
-    }
 }
 
 fn main() -> Result<(), String> {
