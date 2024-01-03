@@ -14,21 +14,31 @@
  * limitations under the License.
  */
 
-use clap::{Parser, Subcommand};
+use clap::{Args, Parser, ValueEnum};
 
 #[derive(Parser)]
 #[clap(author, version, about, long_about = None)]
 struct Cli {
-    #[arg(short, long="xbar", conflicts_with="binary_decision_diagram")]
-    crossbar: bool,
-    #[arg(short, long="bdd", conflicts_with="crossbar")]
-    binary_decision_diagram: bool,
+    /// The type of logical artifact to operate on
+    #[arg(value_enum, required = true)]
+    r#type: ArtifactType,
 }
 
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
+enum ArtifactType {
+    /// apply action to a binary decision diagram
+    #[value(name = "bdd")]
+    BinaryDecisionDiagram,
+    /// apply action to crossbar matrix
+    #[value(name = "xbar")]
+    CrossbarMatrix
+}
 
 fn main() {
     let cli = Cli::parse();
 
-    println!("BDD? {:?}", cli.binary_decision_diagram);
-    println!("XBAR? {:?}", cli.crossbar);
+    match cli.r#type {
+        ArtifactType::BinaryDecisionDiagram => println!("Operating on bdd."),
+        ArtifactType::CrossbarMatrix => println!("Operating on crossbar.")
+    }
 }
