@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-use crate::bdd::BDDError::{EvaluationError, VariableAssignmentError};
+use crate::bdd::BinaryDecisionDiagram;
 use crate::bdd::BinaryNode::{Decision, Terminal};
-use crate::bdd::{BDDError, BinaryDecisionDiagram};
-use crate::{convert_bits_to_bools, Evaluate};
+use crate::FlowError::{EvaluationError, VariableAssignmentError};
+use crate::{convert_bits_to_bools, Evaluate, FlowError};
 
 impl Evaluate for BinaryDecisionDiagram {
-    type Err = BDDError;
-
-    fn assign_vars(&mut self, values: &[bool]) -> Result<(), Self::Err> {
+    fn assign_vars(&mut self, values: &[bool]) -> Result<(), FlowError> {
         if values.len() != self.variables.len() {
             return Err(VariableAssignmentError(
                 "Length of variable assignment does not match",
@@ -42,7 +40,7 @@ impl Evaluate for BinaryDecisionDiagram {
         Ok(())
     }
 
-    fn eval(&self) -> Result<bool, Self::Err> {
+    fn eval(&self) -> Result<bool, FlowError> {
         let mut cur_node = self
             .nodes
             .get(&self.entry_node)
@@ -66,7 +64,7 @@ impl Evaluate for BinaryDecisionDiagram {
         }
     }
 
-    fn truth_table(&mut self) -> Result<Vec<bool>, Self::Err> {
+    fn truth_table(&mut self) -> Result<Vec<bool>, FlowError> {
         if self.variables.len() > usize::BITS as usize {
             return Err(EvaluationError("Too many variables"));
         }
