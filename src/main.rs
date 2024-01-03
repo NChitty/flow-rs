@@ -14,6 +14,21 @@
  * limitations under the License.
  */
 
+use clap::{Parser, Subcommand};
+
+#[derive(Parser)]
+#[clap(author, version, about, long_about = None)]
+struct Cli {
+    #[arg(short, long="xbar", conflicts_with="binary_decision_diagram")]
+    crossbar: bool,
+    #[arg(short, long="bdd", conflicts_with="crossbar")]
+    binary_decision_diagram: bool,
+}
+
+
 fn main() {
-    println!("Hello, world!");
+    let cli = Cli::parse();
+
+    println!("BDD? {:?}", cli.binary_decision_diagram);
+    println!("XBAR? {:?}", cli.crossbar);
 }
