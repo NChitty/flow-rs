@@ -15,10 +15,10 @@
  */
 
 use std::collections::HashMap;
-use std::fmt::{Display, Formatter};
-use std::num::ParseIntError;
 
-use crate::FlowError::{EvaluationError, ParseError};
+
+
+use crate::FlowError::{EvaluationError};
 use crate::{FlowError, Variable};
 
 #[cfg(test)]
