@@ -29,6 +29,7 @@ pub struct BinaryDecisionDiagram {
     entry_node: usize,
 }
 
+mod display;
 mod eval;
 mod parse;
 
