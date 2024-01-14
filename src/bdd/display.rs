@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 use std::fmt::{Display, Formatter};
 
 use crate::bdd::{BinaryDecisionDiagram, BinaryNode, DecisionNode};
@@ -101,7 +100,6 @@ nodes 3
         let simple_bdd_lines_vec: Vec<&str> = SIMPLE_BDD.lines().collect();
         let bdd_lines = bdd_display.lines();
         for line in bdd_lines {
-            dbg!(line);
             assert!(simple_bdd_lines_vec.contains(&line));
         }
     }
