@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+use std::error::Error;
+use std::fmt::{Display, Formatter};
 use std::num::ParseIntError;
 
-use crate::FlowError::ParseError;
+use crate::FlowError::{EvaluationError, ParseError, VariableAssignmentError};
 
 pub mod bdd;
 
@@ -32,6 +34,24 @@ pub enum FlowError {
 impl From<ParseIntError> for FlowError {
     fn from(_: ParseIntError) -> Self { ParseError("Could not parse int") }
 }
+
+impl Display for FlowError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            EvaluationError(msg) => {
+                write!(f, "Could not evaluate: {msg}")
+            },
+            ParseError(msg) => {
+                write!(f, "Could not parse: {msg}")
+            },
+            VariableAssignmentError(msg) => {
+                write!(f, "Could not assign variable: {msg}")
+            },
+        }
+    }
+}
+
+impl Error for FlowError {}
 
 pub trait Evaluate {
     /// Assign variables the variables the given values.
