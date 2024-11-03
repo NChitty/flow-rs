@@ -155,7 +155,7 @@ fn respond(command: Cli, x: &mut ApplicationContext) -> Result<bool, String> {
                     .collect::<Result<Vec<_>, _>>()
                     .map_err(|_| "Input must be a hex digit number.")?
                     .iter()
-                    .flat_map(byte_to_bools)
+                    .flat_map(|byte| byte_to_bools(*byte))
                     .collect(),
                 None => args.bools.unwrap(),
             };
@@ -175,10 +175,10 @@ fn respond(command: Cli, x: &mut ApplicationContext) -> Result<bool, String> {
             let output: String = bools
                 .iter()
                 .enumerate()
-                .map(|(i, val)| format!("variable_{} = {} ", i, val))
-                .collect::<String>();
-            println!("{}", output);
-            println!("Evaluation: {}", result);
+                .map(|(i, val)| format!("variable_{i} = {val}"))
+                .fold(String::new(), |acc, x| format!("{acc}, {x}"));
+            println!("{output}");
+            println!("Evaluation: {result}");
 
             Ok(false)
         },
@@ -186,9 +186,9 @@ fn respond(command: Cli, x: &mut ApplicationContext) -> Result<bool, String> {
     }
 }
 
-pub fn byte_to_bools(byte: &u8) -> Vec<bool> {
+fn byte_to_bools(byte: u8) -> Vec<bool> {
     let mut bools = Vec::new();
-    let mut cur_bits = *byte;
+    let mut cur_bits = byte;
     let mut tracker = 8;
     while tracker > 0 {
         bools.push((cur_bits & 1) == 1);
@@ -211,7 +211,7 @@ mod test {
     fn byte_to_bool() {
         let byte = 0xaa;
         let expected = vec![false, true, false, true, false, true, false, true];
-        let actual = byte_to_bools(&byte);
+        let actual = byte_to_bools(byte);
         assert_eq!(actual, expected);
     }
 }
