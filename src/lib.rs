@@ -75,7 +75,7 @@ pub trait Evaluate {
     ///     // do eval
     /// }
     /// ```
-    fn assign_vars(&mut self, values: &[bool]) -> Result<(), FlowError>;
+    fn assign_vars(&mut self, values: &[bool]) -> Result<Vec<bool>, FlowError>;
 
     /// Evaluate the current struct using currently assigned variables.
     /// # Errors

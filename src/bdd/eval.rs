@@ -20,12 +20,13 @@ use crate::FlowError::{EvaluationError, VariableAssignmentError};
 use crate::{convert_bits_to_bools, Evaluate, FlowError};
 
 impl Evaluate for BinaryDecisionDiagram {
-    fn assign_vars(&mut self, values: &[bool]) -> Result<(), FlowError> {
-        if values.len() != self.variables.len() {
+    fn assign_vars(&mut self, values: &[bool]) -> Result<Vec<bool>, FlowError> {
+        if values.len() < self.variables.len() {
             return Err(VariableAssignmentError(
-                "Length of variable assignment does not match",
+                    "The length of values is less than the number of variables to assign.",
             ));
         }
+        let bools = &values[0..self.variables.len()];
 
         let mut keys: Vec<usize> = self.variables.keys().copied().collect();
         keys.sort_unstable();
@@ -34,10 +35,13 @@ impl Evaluate for BinaryDecisionDiagram {
             *self
                 .variables
                 .get_mut(&value)
-                .expect("Malformed variables, unable to find in map") = Some(values[index]);
+                .expect("Malformed variables, unable to find in map") = Some(bools[index]);
         }
 
-        Ok(())
+        Ok(self.variables.values().map(|val| match val {
+            Some(thing) => *thing,
+            None => panic!("None in variable map after assignment."),
+        }).collect())
     }
 
     fn eval(&self) -> Result<bool, FlowError> {
@@ -95,21 +99,22 @@ nodes 3
 2 -1 -1 1";
 
     #[test]
-    fn given_too_few_vars_then_err() {
+    fn too_few_vars() {
         let mut bdd = BinaryDecisionDiagram::from_str(SIMPLE_BDD).unwrap();
         let bools = vec![];
         assert!(bdd.assign_vars(&bools).is_err());
     }
 
     #[test]
-    fn given_too_many_vars_then_err() {
+    fn too_many_vars() {
         let mut bdd = BinaryDecisionDiagram::from_str(SIMPLE_BDD).unwrap();
         let bools = vec![true, true];
-        assert!(bdd.assign_vars(&bools).is_err());
+        assert!(bdd.assign_vars(&bools).is_ok());
+        assert!(bdd.variables.get(&0).unwrap().unwrap_or(false));
     }
 
     #[test]
-    fn given_one_indexed_vars_then_ok() {
+    fn one_indexed_vars() {
         let mut bdd = BinaryDecisionDiagram::from_str(
             "vars 1
 nodes 3
@@ -123,7 +128,7 @@ nodes 3
     }
 
     #[test]
-    fn given_vars_then_assigned() {
+    fn vars() {
         let mut bdd = BinaryDecisionDiagram::from_str(SIMPLE_BDD).unwrap();
         let bools = vec![true];
         assert!(bdd.assign_vars(&bools).is_ok());
@@ -131,7 +136,7 @@ nodes 3
     }
 
     #[test]
-    fn given_true_assignment_when_eval_then_true() {
+    fn true_assignment() {
         let mut bdd = BinaryDecisionDiagram::from_str(SIMPLE_BDD).unwrap();
         let bools = vec![true];
         bdd.assign_vars(&bools).expect("Could not assign bools.");
@@ -139,7 +144,7 @@ nodes 3
     }
 
     #[test]
-    fn given_false_assignment_when_eval_then_false() {
+    fn false_assignment() {
         let mut bdd = BinaryDecisionDiagram::from_str(SIMPLE_BDD).unwrap();
         let bools = vec![false];
         bdd.assign_vars(&bools).expect("Could not assign bools.");
