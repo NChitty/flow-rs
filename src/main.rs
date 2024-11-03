@@ -53,7 +53,7 @@ struct ReadArguments {
 #[command(group(ArgGroup::new("input").required(true).args(["hex", "bools"])))]
 struct EvaluateArguments {
     /// hex string, must be an even number of characters
-    #[arg(short, long, required_unless_present = "bools")]
+    #[arg(short = 'x', long, required_unless_present = "bools")]
     hex: Option<String>,
 
     /// Input as a sequence of bools, provided as comma-separated list
