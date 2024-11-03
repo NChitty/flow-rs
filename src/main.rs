@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+use std::fmt::Debug;
 use std::io::Write;
 use std::path::Path;
 use std::{fs, io};
 
-use clap::{Args, Parser, Subcommand, ValueEnum};
+use clap::{ArgGroup, Args, Parser, Subcommand, ValueEnum};
 use flow::bdd::BinaryDecisionDiagram;
 use flow::{Evaluate, FlowError};
 
@@ -33,6 +34,8 @@ struct Cli {
 enum Action {
     /// load into memory
     Read(ReadArguments),
+    /// evaluate logical artifact
+    Evaluate(EvaluateArguments),
     /// exit the program
     Quit,
 }
@@ -44,6 +47,18 @@ struct ReadArguments {
     r#type: ArtifactType,
     /// The file to read from
     file: String,
+}
+
+#[derive(Args, Debug)]
+#[command(group(ArgGroup::new("input").required(true).args(["hex", "bools"])))]
+struct EvaluateArguments {
+    /// hex string, must be an even number of characters
+    #[arg(short = 'x', long, required_unless_present = "bools")]
+    hex: Option<String>,
+
+    /// Input as a sequence of bools, provided as comma-separated list
+    #[arg(short, long, required_unless_present = "hex", value_delimiter = ' ', num_args = 1..)]
+    bools: Option<Vec<bool>>,
 }
 
 #[derive(Copy, Clone, Debug, Eq, Ord, PartialEq, PartialOrd, ValueEnum)]
@@ -116,7 +131,7 @@ fn respond(command: Cli, x: &mut ApplicationContext) -> Result<bool, String> {
                         .map_err(|e| match e {
                             FlowError::EvaluationError(str)
                             | FlowError::ParseError(str)
-                            | FlowError::VariableAssignmentError(str) => String::from(str),
+                            | FlowError::VariableAssignmentError(str) => str,
                         })?;
                     bdd
                 },
@@ -128,16 +143,75 @@ fn respond(command: Cli, x: &mut ApplicationContext) -> Result<bool, String> {
 
             Ok(false)
         },
+        Action::Evaluate(args) => {
+            let artifact = x
+                .logical_artifact
+                .as_mut()
+                .ok_or("Must read in a logical artifact.")?;
+            let bools: Vec<bool> = match args.hex {
+                Some(hex) => (0..hex.len())
+                    .step_by(2)
+                    .map(|index| u8::from_str_radix(&hex[index..index + 2], 16))
+                    .collect::<Result<Vec<_>, _>>()
+                    .map_err(|_| "Input must be a hex digit number.")?
+                    .iter()
+                    .flat_map(|byte| byte_to_bools(*byte))
+                    .collect(),
+                None => args.bools.unwrap(),
+            };
+
+            let bools = artifact.assign_vars(&bools).map_err(|e| match e {
+                FlowError::EvaluationError(str)
+                | FlowError::ParseError(str)
+                | FlowError::VariableAssignmentError(str) => str,
+            })?;
+
+            let result = artifact.eval().map_err(|e| match e {
+                FlowError::EvaluationError(str)
+                | FlowError::ParseError(str)
+                | FlowError::VariableAssignmentError(str) => str,
+            })?;
+
+            let output: String = bools
+                .iter()
+                .enumerate()
+                .map(|(i, val)| format!("variable_{i} = {val}"))
+                .fold(String::new(), |acc, x| format!("{acc}, {x}"));
+            println!("{output}");
+            println!("Evaluation: {result}");
+
+            Ok(false)
+        },
         Action::Quit => Ok(true),
     }
+}
+
+fn byte_to_bools(byte: u8) -> Vec<bool> {
+    let mut bools = Vec::new();
+    let mut cur_bits = byte;
+    let mut tracker = 8;
+    while tracker > 0 {
+        bools.push((cur_bits & 1) == 1);
+        tracker -= 1;
+        cur_bits >>= 1;
+    }
+    bools
 }
 
 #[cfg(test)]
 mod test {
     use clap::CommandFactory;
 
-    use crate::Cli;
+    use crate::{byte_to_bools, Cli};
 
     #[test]
     fn verify_cmd() { Cli::command().debug_assert(); }
+
+    #[test]
+    fn byte_to_bool() {
+        let byte = 0xaa;
+        let expected = vec![false, true, false, true, false, true, false, true];
+        let actual = byte_to_bools(byte);
+        assert_eq!(actual, expected);
+    }
 }

@@ -157,19 +157,19 @@ nodes 4
     }
 
     #[test]
-    fn given_empty_string_then_error() {
+    fn empty_string() {
         let bdd = BinaryDecisionDiagram::from_str("");
         assert!(bdd.is_err());
     }
 
     #[test]
-    fn given_var_line_only_then_error() {
+    fn var_line_only() {
         let bdd = BinaryDecisionDiagram::from_str("vars 1");
         assert!(bdd.is_err());
     }
 
     #[test]
-    fn given_nodes_line_only_then_error() {
+    fn nodes_line_only() {
         let bdd = BinaryDecisionDiagram::from_str(
             "vars 1
 nodes 1",
@@ -178,7 +178,7 @@ nodes 1",
     }
 
     #[test]
-    fn given_negative_node_id_then_error() {
+    fn negative_node_id() {
         let bdd = BinaryDecisionDiagram::from_str(
             "vars 1
 nodes 1
@@ -188,7 +188,7 @@ nodes 1
     }
 
     #[test]
-    fn given_non_matching_vars_then_error() {
+    fn non_matching_vars() {
         let bdd = BinaryDecisionDiagram::from_str(
             "vars 2
 nodes 1
@@ -198,7 +198,7 @@ nodes 1
     }
 
     #[test]
-    fn given_non_matching_nodes_then_error() {
+    fn non_matching_nodes() {
         let bdd = BinaryDecisionDiagram::from_str(
             "vars 1
 nodes 2
@@ -208,7 +208,7 @@ nodes 2
     }
 
     #[test]
-    fn given_no_terminal_nodes_then_error() {
+    fn no_terminal_nodes() {
         let bdd = BinaryDecisionDiagram::from_str(
             "vars 1
 nodes 1
@@ -218,7 +218,7 @@ nodes 1
     }
 
     #[test]
-    fn given_only_true_terminal_nodes_then_error() {
+    fn only_true_terminal_nodes() {
         let bdd = BinaryDecisionDiagram::from_str(
             "vars 1
 nodes 2
@@ -229,7 +229,7 @@ nodes 2
     }
 
     #[test]
-    fn given_only_false_terminal_nodes_then_error() {
+    fn only_false_terminal_nodes() {
         let bdd = BinaryDecisionDiagram::from_str(
             "vars 1
 nodes 2
@@ -240,7 +240,7 @@ nodes 2
     }
 
     #[test]
-    fn given_parseable_then_ok() {
+    fn parseable() {
         let bdd = BinaryDecisionDiagram::from_str(
             "vars 1
 nodes 3

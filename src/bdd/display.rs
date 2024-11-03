@@ -46,7 +46,7 @@ impl Display for DecisionNode {
         write!(
             f,
             "{} {} {}",
-            self.decision_map[1], self.decision_map[0], self.variable_id
+            self.decision_map.1, self.decision_map.0, self.variable_id
         )
     }
 }
@@ -56,32 +56,32 @@ mod test {
     use crate::bdd::{BinaryDecisionDiagram, BinaryNode, DecisionNode};
 
     #[test]
-    fn display_decision_node() {
+    fn decision_node() {
         let node = DecisionNode {
             variable_id: 3,
-            decision_map: [2, 1],
+            decision_map: (2, 1),
         };
         assert_eq!(format!("{node}"), "1 2 3");
     }
 
     #[test]
-    fn display_binary_node_decision() {
+    fn binary_node_decision() {
         let node = DecisionNode {
             variable_id: 3,
-            decision_map: [2, 1],
+            decision_map: (2, 1),
         };
         let binary_node = BinaryNode::Decision(node);
         assert_eq!(format!("{binary_node}"), "1 2 3");
     }
 
     #[test]
-    fn display_binary_node_terminal_true() {
+    fn terminal_binary_node_true() {
         let binary_node = BinaryNode::Terminal(true);
         assert_eq!(format!("{binary_node}"), "-1 -1 1");
     }
 
     #[test]
-    fn display_binary_node_terminal_false() {
+    fn terminal_binary_node_false() {
         let binary_node = BinaryNode::Terminal(false);
         assert_eq!(format!("{binary_node}"), "-1 -1 0");
     }
@@ -93,7 +93,7 @@ nodes 3
 2 -1 -1 1";
 
     #[test]
-    fn display_bdd() {
+    fn bdd() {
         let bdd: BinaryDecisionDiagram = SIMPLE_BDD.parse().unwrap();
         let bdd_display = format!("{bdd}");
 
