@@ -23,7 +23,7 @@ impl Evaluate for BinaryDecisionDiagram {
     fn assign_vars(&mut self, values: &[bool]) -> Result<Vec<bool>, FlowError> {
         if values.len() < self.variables.len() {
             return Err(VariableAssignmentError(
-                    "The length of values is less than the number of variables to assign.",
+                "The length of values is less than the number of variables to assign.",
             ));
         }
         let bools = &values[0..self.variables.len()];
@@ -38,10 +38,14 @@ impl Evaluate for BinaryDecisionDiagram {
                 .expect("Malformed variables, unable to find in map") = Some(bools[index]);
         }
 
-        Ok(self.variables.values().map(|val| match val {
-            Some(thing) => *thing,
-            None => panic!("None in variable map after assignment."),
-        }).collect())
+        Ok(self
+            .variables
+            .values()
+            .map(|val| match val {
+                Some(thing) => *thing,
+                None => panic!("None in variable map after assignment."),
+            })
+            .collect())
     }
 
     fn eval(&self) -> Result<bool, FlowError> {
