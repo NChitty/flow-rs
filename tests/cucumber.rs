@@ -5,9 +5,18 @@ use cucumber::{given, then, when, Parameter, World};
 use flow::bdd::BinaryDecisionDiagram;
 use flow::{byte_to_bools, Evaluate};
 
+#[derive(Debug)]
+enum Artifact {
+    Bdd(BinaryDecisionDiagram),
+}
+
+impl Default for Artifact {
+    fn default() -> Self { Self::Bdd(BinaryDecisionDiagram::default()) }
+}
+
 #[derive(Debug, Default, World)]
-pub struct BddWorld {
-    bdd: BinaryDecisionDiagram,
+pub struct FlowWorld {
+    artifact: Artifact,
 }
 
 #[derive(Debug, Default, Eq, Parameter, PartialEq)]
@@ -33,22 +42,54 @@ impl FromStr for Variables {
 }
 
 #[given("a bdd with definition")]
-fn parse_bdd(world: &mut BddWorld, step: &Step) {
+fn parse_bdd(world: &mut FlowWorld, step: &Step) {
     let definition = step.docstring().expect("Docstring not present.");
-    world.bdd = definition
-        .trim()
-        .parse()
-        .expect("Could not parse docstring.");
+    world.artifact = Artifact::Bdd(
+        definition
+            .trim()
+            .parse()
+            .expect("Could not parse docstring."),
+    );
 }
 
 #[when(expr = "{vars} is assigned as hex")]
-fn assign_var(world: &mut BddWorld, vars: Variables) {
-    let _ = world.bdd.assign_vars(&vars.variables);
+fn assign_var(world: &mut FlowWorld, vars: Variables) -> Result<(), String> {
+    let _ = match world.artifact {
+        Artifact::Bdd(ref mut bdd) => {
+            bdd.assign_vars(&vars.variables)
+                .map_err(|err| err.to_string())?;
+        },
+    };
+    Ok(())
 }
 
 #[then(expr = "the evaluation should be {word}")]
-fn evaluate(world: &mut BddWorld, expect: bool) {
-    assert_eq!(expect, world.bdd.eval().expect("Could not evaluate BDD."))
+fn evaluate(world: &mut FlowWorld, expect: bool) -> Result<(), String> {
+    let actual = match world.artifact {
+        Artifact::Bdd(ref bdd) => bdd.eval().map_err(|err| err.to_string())?,
+    };
+
+    assert_eq!(expect, actual);
+    Ok(())
 }
 
-fn main() { futures::executor::block_on(BddWorld::run("tests/features/bdd.feature")); }
+#[then("the truth table should equal")]
+fn truth_table(world: &mut FlowWorld, step: &Step) -> Result<(), String> {
+    let truth_table = match world.artifact {
+        Artifact::Bdd(ref mut bdd) => bdd
+            .truth_table()
+            .map_err(|err| err.to_string())?
+            .iter()
+            .enumerate()
+            .map(|(i, val)| format!("{i:x} = {val}"))
+            .collect::<Vec<_>>()
+            .join("\n"),
+    };
+    assert_eq!(
+        step.docstring().expect("Docstring not present.").trim(),
+        truth_table
+    );
+    Ok(())
+}
+
+fn main() { futures::executor::block_on(FlowWorld::run("tests/features/bdd.feature")); }
