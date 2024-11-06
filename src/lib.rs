@@ -134,6 +134,7 @@ pub(crate) fn convert_bits_to_bools(bits: usize, num_vars: usize) -> Vec<bool> {
     bools
 }
 
+#[must_use]
 pub fn byte_to_bools(byte: u8) -> Vec<bool> {
     let mut bools = Vec::new();
     let mut cur_bits = byte;
