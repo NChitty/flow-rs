@@ -176,7 +176,8 @@ fn respond(command: Cli, x: &mut ApplicationContext) -> Result<bool, String> {
                 .iter()
                 .enumerate()
                 .map(|(i, val)| format!("variable_{i} = {val}"))
-                .fold(String::new(), |acc, x| format!("{acc}, {x}"));
+                .collect::<Vec<_>>()
+                .join(", ");
             println!("{output}");
             println!("Evaluation: {result}");
 
