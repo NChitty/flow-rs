@@ -53,8 +53,9 @@ fn parse_bdd(world: &mut FlowWorld, step: &Step) {
 }
 
 #[when(expr = "{vars} is assigned as hex")]
+#[allow(clippy::needless_pass_by_value)]
 fn assign_var(world: &mut FlowWorld, vars: Variables) -> Result<(), String> {
-    let _ = match world.artifact {
+    match world.artifact {
         Artifact::Bdd(ref mut bdd) => {
             bdd.assign_vars(&vars.variables)
                 .map_err(|err| err.to_string())?;
