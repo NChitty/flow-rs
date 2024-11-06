@@ -133,3 +133,28 @@ pub(crate) fn convert_bits_to_bools(bits: usize, num_vars: usize) -> Vec<bool> {
     }
     bools
 }
+
+pub fn byte_to_bools(byte: u8) -> Vec<bool> {
+    let mut bools = Vec::new();
+    let mut cur_bits = byte;
+    let mut tracker = 8;
+    while tracker > 0 {
+        bools.push((cur_bits & 1) == 1);
+        tracker -= 1;
+        cur_bits >>= 1;
+    }
+    bools
+}
+
+#[cfg(test)]
+mod test {
+    use crate::byte_to_bools;
+
+    #[test]
+    fn byte_to_bool() {
+        let byte = 0xaa;
+        let expected = vec![false, true, false, true, false, true, false, true];
+        let actual = byte_to_bools(byte);
+        assert_eq!(actual, expected);
+    }
+}
