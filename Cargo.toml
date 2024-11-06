@@ -7,3 +7,11 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.4.11", features = ["derive"] }
+
+[dev-dependencies]
+cucumber = "0.21.1"
+futures = "0.3.31"
+
+[[test]]
+name = "cucumber"
+harness = false

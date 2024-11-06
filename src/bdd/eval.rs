@@ -144,7 +144,7 @@ nodes 3
         let mut bdd = BinaryDecisionDiagram::from_str(SIMPLE_BDD).unwrap();
         let bools = vec![true];
         bdd.assign_vars(&bools).expect("Could not assign bools.");
-        assert!(bdd.eval().expect("Could not evaluate"))
+        assert!(bdd.eval().expect("Could not evaluate"));
     }
 
     #[test]
@@ -152,7 +152,7 @@ nodes 3
         let mut bdd = BinaryDecisionDiagram::from_str(SIMPLE_BDD).unwrap();
         let bools = vec![false];
         bdd.assign_vars(&bools).expect("Could not assign bools.");
-        assert!(!bdd.eval().expect("Could not evaluate"))
+        assert!(!bdd.eval().expect("Could not evaluate"));
     }
 
     #[test]

@@ -21,7 +21,7 @@ use std::{fs, io};
 
 use clap::{ArgGroup, Args, Parser, Subcommand, ValueEnum};
 use flow::bdd::BinaryDecisionDiagram;
-use flow::{Evaluate, FlowError};
+use flow::{byte_to_bools, Evaluate, FlowError};
 
 #[derive(Debug, Parser)]
 #[command(author, version, about, long_about = None, multicall = true)]
@@ -176,7 +176,8 @@ fn respond(command: Cli, x: &mut ApplicationContext) -> Result<bool, String> {
                 .iter()
                 .enumerate()
                 .map(|(i, val)| format!("variable_{i} = {val}"))
-                .fold(String::new(), |acc, x| format!("{acc}, {x}"));
+                .collect::<Vec<_>>()
+                .join(", ");
             println!("{output}");
             println!("Evaluation: {result}");
 
@@ -186,32 +187,12 @@ fn respond(command: Cli, x: &mut ApplicationContext) -> Result<bool, String> {
     }
 }
 
-fn byte_to_bools(byte: u8) -> Vec<bool> {
-    let mut bools = Vec::new();
-    let mut cur_bits = byte;
-    let mut tracker = 8;
-    while tracker > 0 {
-        bools.push((cur_bits & 1) == 1);
-        tracker -= 1;
-        cur_bits >>= 1;
-    }
-    bools
-}
-
 #[cfg(test)]
 mod test {
     use clap::CommandFactory;
 
-    use crate::{byte_to_bools, Cli};
+    use crate::Cli;
 
     #[test]
     fn verify_cmd() { Cli::command().debug_assert(); }
-
-    #[test]
-    fn byte_to_bool() {
-        let byte = 0xaa;
-        let expected = vec![false, true, false, true, false, true, false, true];
-        let actual = byte_to_bools(byte);
-        assert_eq!(actual, expected);
-    }
 }

@@ -36,7 +36,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: 'github-pr-review'
           filter_mode: diff_context
-          clippy_flags: "-- -W clippy::pedantic"
+          clippy_flags: "--all-targets -- -W clippy::pedantic"
 
   tests:
     name: "Tests"

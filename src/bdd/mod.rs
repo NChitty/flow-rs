@@ -19,7 +19,7 @@ use std::collections::HashMap;
 use crate::FlowError::EvaluationError;
 use crate::{FlowError, Variable};
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct BinaryDecisionDiagram {
     variables: HashMap<usize, Variable>,
     nodes: HashMap<usize, BinaryNode>,
