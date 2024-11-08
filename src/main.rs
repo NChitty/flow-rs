@@ -160,13 +160,7 @@ fn respond(command: Cli, x: &mut ApplicationContext) -> Result<bool, String> {
                 None => args.bools.unwrap(),
             };
 
-            let bools = artifact.assign_vars(&bools).map_err(|e| match e {
-                FlowError::EvaluationError(str)
-                | FlowError::ParseError(str)
-                | FlowError::VariableAssignmentError(str) => str,
-            })?;
-
-            let result = artifact.eval().map_err(|e| match e {
+            let result = artifact.eval(&bools).map_err(|e| match e {
                 FlowError::EvaluationError(str)
                 | FlowError::ParseError(str)
                 | FlowError::VariableAssignmentError(str) => str,

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 use std::str::FromStr;
 
@@ -47,7 +46,7 @@ impl FromStr for BinaryDecisionDiagram {
             .ok_or(ParseError("Node line does not specify number"))?
             .parse::<usize>()?;
 
-        let mut variables = HashMap::with_capacity(num_vars);
+        let variables = num_vars;
         let mut nodes = HashMap::with_capacity(num_nodes);
         let mut entry_node: Option<usize> = None;
         for line in lines {
@@ -78,10 +77,6 @@ impl FromStr for BinaryDecisionDiagram {
                 entry_node = Some(node_num);
             }
 
-            if let Entry::Vacant(v) = variables.entry(var_id) {
-                v.insert(None);
-            }
-
             nodes.insert(
                 node_num,
                 Decision(DecisionNode::new_node(
@@ -90,10 +85,6 @@ impl FromStr for BinaryDecisionDiagram {
                     var_id,
                 )),
             );
-        }
-
-        if num_vars != variables.len() || num_nodes != nodes.len() {
-            return Err(ParseError("Number of tokens does not match first lines"));
         }
 
         let mut has_false = false;
@@ -142,7 +133,7 @@ nodes 4
     fn from_string() {
         let bdd = BinaryDecisionDiagram::from_str(FREE_BDD_2).unwrap();
 
-        assert_eq!(2, bdd.variables.len());
+        assert_eq!(2, bdd.variables);
         assert_eq!(4, bdd.nodes.len());
         assert_eq!(
             &Decision(DecisionNode::new_node(2, 4, 1)),
