@@ -54,29 +54,6 @@ impl Display for FlowError {
 impl Error for FlowError {}
 
 pub trait Evaluate {
-    /// Assign variables the variables the given values.
-    /// # Arguments
-    /// * `values` - a slice of booleans to assign to the given struct in order
-    /// # Errors
-    /// * `VariableAssignmentError` - when the number does not match or a match
-    ///   can't be found
-    /// # Example
-    /// The following assigns the variable `0` to true for the BDD.
-    /// ```
-    /// use flow::bdd::BinaryDecisionDiagram;
-    /// use flow::Evaluate;
-    /// const SIMPLE_BDD: &str = "vars 1
-    ///  nodes 3
-    ///  0 1 2 0
-    ///  1 -1 -1 1
-    ///  2 -1 -1 0";
-    /// let mut some_evaluate: BinaryDecisionDiagram = SIMPLE_BDD.parse().unwrap();
-    /// if let Ok(_) = some_evaluate.assign_vars(&vec![true]) {
-    ///     // do eval
-    /// }
-    /// ```
-    fn assign_vars(&mut self, values: &[bool]) -> Result<Vec<bool>, FlowError>;
-
     /// Evaluate the current struct using currently assigned variables.
     /// # Errors
     /// * `VariableAssignmentError` - tried to valuate on a variable that has
@@ -94,11 +71,9 @@ pub trait Evaluate {
     ///  1 -1 -1 1
     ///  2 -1 -1 0";
     /// let mut some_evaluate: BinaryDecisionDiagram = SIMPLE_BDD.parse().unwrap();
-    /// if let Ok(_) = some_evaluate.assign_vars(&vec![true]) {
-    ///     let eval: bool = some_evaluate.eval().unwrap();
-    /// }
+    /// let eval: bool = some_evaluate.eval(&vec![true]).unwrap();
     /// ```
-    fn eval(&self) -> Result<bool, FlowError>;
+    fn eval(&self, values: &[bool]) -> Result<bool, FlowError>;
 
     /// Get a list of booleans in order based on values of the variables
     /// # Errors
@@ -116,10 +91,10 @@ pub trait Evaluate {
     ///  0 1 2 0
     ///  1 -1 -1 1
     ///  2 -1 -1 0";
-    /// let mut some_evaluate: BinaryDecisionDiagram = SIMPLE_BDD.parse().unwrap();
+    /// let some_evaluate: BinaryDecisionDiagram = SIMPLE_BDD.parse().unwrap();
     /// some_evaluate.truth_table();
     /// ```
-    fn truth_table(&mut self) -> Result<Vec<bool>, FlowError>;
+    fn truth_table(&self) -> Result<Vec<bool>, FlowError>;
 }
 
 pub(crate) fn convert_bits_to_bools(bits: usize, num_vars: usize) -> Vec<bool> {

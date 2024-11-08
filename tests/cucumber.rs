@@ -17,6 +17,7 @@ impl Default for Artifact {
 #[derive(Debug, Default, World)]
 pub struct FlowWorld {
     artifact: Artifact,
+    variables: Variables,
 }
 
 #[derive(Debug, Default, Eq, Parameter, PartialEq)]
@@ -54,20 +55,14 @@ fn parse_bdd(world: &mut FlowWorld, step: &Step) {
 
 #[when(expr = "{vars} is assigned as hex")]
 #[allow(clippy::needless_pass_by_value)]
-fn assign_var(world: &mut FlowWorld, vars: Variables) -> Result<(), String> {
-    match world.artifact {
-        Artifact::Bdd(ref mut bdd) => {
-            bdd.assign_vars(&vars.variables)
-                .map_err(|err| err.to_string())?;
-        },
-    };
-    Ok(())
-}
+fn assign_var(world: &mut FlowWorld, vars: Variables) { world.variables = vars; }
 
 #[then(expr = "the evaluation should be {word}")]
 fn evaluate(world: &mut FlowWorld, expect: bool) -> Result<(), String> {
     let actual = match world.artifact {
-        Artifact::Bdd(ref bdd) => bdd.eval().map_err(|err| err.to_string())?,
+        Artifact::Bdd(ref bdd) => bdd
+            .eval(&world.variables.variables)
+            .map_err(|err| err.to_string())?,
     };
 
     assert_eq!(expect, actual);

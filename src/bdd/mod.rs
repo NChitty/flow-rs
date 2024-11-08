@@ -16,12 +16,9 @@
 
 use std::collections::HashMap;
 
-use crate::FlowError::EvaluationError;
-use crate::{FlowError, Variable};
-
 #[derive(Debug, Default)]
 pub struct BinaryDecisionDiagram {
-    variables: HashMap<usize, Variable>,
+    variables: usize,
     nodes: HashMap<usize, BinaryNode>,
     entry_node: usize,
 }
@@ -50,13 +47,11 @@ impl DecisionNode {
         }
     }
 
-    pub fn evaluate(&self, variable: Variable) -> Result<usize, FlowError> {
-        match variable {
-            Some(false) => Ok(self.decision_map.0),
-            Some(true) => Ok(self.decision_map.1),
-            None => Err(EvaluationError(
-                "Cannot evaluate node for an unassigned variable.",
-            )),
+    pub fn evaluate(&self, variable: bool) -> usize {
+        if variable {
+            self.decision_map.1
+        } else {
+            self.decision_map.0
         }
     }
 }
@@ -66,26 +61,16 @@ mod test {
     use crate::bdd::DecisionNode;
 
     #[test]
-    fn unassigned_variable() {
-        let var = None;
-        let node = DecisionNode::new_node(0, 0, 0);
-
-        assert!(node.evaluate(var).err().is_some());
-    }
-
-    #[test]
     fn false_variable() {
-        let var = Some(false);
         let node = DecisionNode::new_node(1, 0, 0);
 
-        assert_eq!(1, node.evaluate(var).unwrap());
+        assert_eq!(1, node.evaluate(false));
     }
 
     #[test]
     fn true_variable() {
-        let var = Some(true);
         let node = DecisionNode::new_node(0, 1, 0);
 
-        assert_eq!(1, node.evaluate(var).unwrap());
+        assert_eq!(1, node.evaluate(true));
     }
 }

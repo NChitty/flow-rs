@@ -20,9 +20,8 @@ use crate::bdd::{BinaryDecisionDiagram, BinaryNode, DecisionNode};
 
 impl Display for BinaryDecisionDiagram {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let num_vars = self.variables.keys().len();
         let num_nodes = self.nodes.keys().len();
-        writeln!(f, "vars {num_vars}")?;
+        writeln!(f, "vars {}", self.variables)?;
         write!(f, "nodes {num_nodes}")?;
         for mapping in &self.nodes {
             write!(f, "\n{} {}", mapping.0, mapping.1)?;
