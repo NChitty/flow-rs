@@ -48,7 +48,11 @@ impl DecisionNode {
     }
 
     pub fn evaluate(&self, variable: bool) -> usize {
-        if variable {self.decision_map.1} else {self.decision_map.0}
+        if variable {
+            self.decision_map.1
+        } else {
+            self.decision_map.0
+        }
     }
 }
 

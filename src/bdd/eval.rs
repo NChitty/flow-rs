@@ -22,7 +22,9 @@ use crate::{convert_bits_to_bools, Evaluate, FlowError};
 impl Evaluate for BinaryDecisionDiagram {
     fn eval(&self, values: &[bool]) -> Result<bool, FlowError> {
         if values.len() < self.variables {
-            return Err(VariableAssignmentError("The length of values is less than the number of variables to assign."));
+            return Err(VariableAssignmentError(
+                "The length of values is less than the number of variables to assign.",
+            ));
         }
         let mut cur_node = self
             .nodes

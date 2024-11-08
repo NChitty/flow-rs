@@ -55,14 +55,14 @@ fn parse_bdd(world: &mut FlowWorld, step: &Step) {
 
 #[when(expr = "{vars} is assigned as hex")]
 #[allow(clippy::needless_pass_by_value)]
-fn assign_var(world: &mut FlowWorld, vars: Variables) {
-    world.variables = vars;
-}
+fn assign_var(world: &mut FlowWorld, vars: Variables) { world.variables = vars; }
 
 #[then(expr = "the evaluation should be {word}")]
 fn evaluate(world: &mut FlowWorld, expect: bool) -> Result<(), String> {
     let actual = match world.artifact {
-        Artifact::Bdd(ref bdd) => bdd.eval(&world.variables.variables).map_err(|err| err.to_string())?,
+        Artifact::Bdd(ref bdd) => bdd
+            .eval(&world.variables.variables)
+            .map_err(|err| err.to_string())?,
     };
 
     assert_eq!(expect, actual);
